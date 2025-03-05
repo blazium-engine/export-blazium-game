@@ -204,9 +204,9 @@ runs:
       run: |
         mkdir -p ~/.config/godot/
         echo -n "${{ inputs.secret-android-keystore-base64 }}" | base64 --decode > ${{ github.action_path }}/release.keystore
-        GODOT_ANDROID_KEYSTORE_RELEASE_PATH="${{ github.action_path }}/release.keystore"
-        GODOT_ANDROID_KEYSTORE_RELEASE_USER="${{ inputs.secret-android-keystore-user }}"
-        GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="${{ inputs.secret-android-keystore-password }}"
+        echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=\"${{ github.action_path }}/release.keystore\"" >> $GITHUB_ENV
+        echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=\"${{ inputs.secret-android-keystore-user }}\"" >> $GITHUB_ENV
+        echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=\"${{ inputs.secret-android-keystore-password }}\"" >> $GITHUB_ENV
         printf "%s\n" "$SETTINGS" > ~/.config/godot/editor_settings-4.tres
 
     - name: Install Android build template
