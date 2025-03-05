@@ -203,7 +203,7 @@ runs:
       if: env.platform-type == 'android'
       shell: bash
       run: |
-        sed -i '' "s|gradle_build/android_source_template=\"\"|gradle_build/android_source_template=\"${{ env.BLAZIUM_TEMPLATE }}/android_source.zip\"|g" export_presets.cfg
+        sed -i "s|gradle_build/android_source_template=\"\"|gradle_build/android_source_template=\"${{ env.BLAZIUM_TEMPLATE }}/android_source.zip\"|g" export_presets.cfg
 
     - name: Setup WINE and rcedit 🍷
       shell: bash
