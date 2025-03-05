@@ -16,26 +16,22 @@ jobs:
       fail-fast: false
       matrix:
         platform: [
-          "Windows Desktop x86_64",
-          "Windows Desktop x86_32",
-          "Windows Desktop arm64",
-          "Windows Desktop arm32",
-          "Linux x86_64",
-          "Linux x86_32",
-          "macOS",
-          "iOS",
-          "Android",
-          "Web"
+          { name: "Windows Desktop x86_64", os: "ubuntu-latest" },
+          { name: "Windows Desktop x86_32", os: "ubuntu-latest" },
+          { name: "Windows Desktop arm64", os: "ubuntu-latest" },
+          { name: "Windows Desktop arm32", os: "ubuntu-latest" },
+          { name: "Linux x86_64", os: "ubuntu-latest" },
+          { name: "Linux x86_32", os: "ubuntu-latest" },
+          { name: "macOS", os: "macos-latest" },
+          { name: "iOS", os: "macos-latest" },
+          { name: "Android", os: "ubuntu-latest" },
+          { name: "Web", os: "ubuntu-latest" },
         ]
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Increment Version
-        run: |
-          python deploy/update_version.py
 
       - name: Build Game
         uses: blazium-engine/build-game@master
