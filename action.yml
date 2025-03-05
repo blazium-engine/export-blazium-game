@@ -262,9 +262,8 @@ runs:
       if: env.platform-type != 'web' && env.platform-type != 'ios'
       run: |
         mkdir -p build/
-        ls -lah /home/runner/work/release.keystore
         echo "$GODOT_ANDROID_KEYSTORE_RELEASE_PATH"
-        sudo Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
+        sudo ${{ env.BLAZIUM_EDITOR }} --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Project iOS
       shell: bash
