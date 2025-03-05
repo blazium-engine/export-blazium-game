@@ -206,7 +206,7 @@ runs:
           export/android/release_keystore_pass = " ${{ inputs.secret-android-keystore-password }}"
       run: |
         mkdir -p ~/.config/godot/
-        echo -n "${{ inputs.secret-android-keystore-base64 }}" | base64 --decode -o ${{ github.action_path }}/release.keystore
+        echo -n "${{ inputs.secret-android-keystore-base64 }}" | base64 --decode > ${{ github.action_path }}/release.keystore
         printf "%s\n" "$SETTINGS" > ~/.config/godot/editor_settings-4.tres
 
     - name: Install Android build template
