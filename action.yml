@@ -263,7 +263,6 @@ runs:
       run: |
         mkdir -p build/
         Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
-        cat ./godot/export_credentials.cfg
     
     - name: 🚀 Build Project iOS
       shell: bash
