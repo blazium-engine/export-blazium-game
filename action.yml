@@ -206,7 +206,7 @@ runs:
         #mkdir -p android/build
         #version_dot=$(echo "${{ inputs.blazium-version }}" | sed 's/-/./')
         # Replace gradle_build/android_source_template="" with the path to android_source.zip
-        sed -i '' "s/gradle_build\/android_source_template=\"\"/gradle_build\/android_source_template=\"${{ env.BLAZIUM_TEMPLATE }}/android_source.zip\"/g" android/build.gradle
+        sed -i '' "s/gradle_build\/android_source_template=\"\"/gradle_build\/android_source_template=\"${{ env.BLAZIUM_TEMPLATE }}/android_source.zip\"/g" export_presets.cfg
         #echo "$version_dot" >> android/.build_version
         #unzip ${{ env.BLAZIUM_TEMPLATE }}/android_source.zip  -d android/build
         #ls android/build
