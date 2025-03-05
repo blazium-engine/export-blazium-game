@@ -46,7 +46,12 @@ jobs:
           secret-apple-id: ${{ secrets.APPLE_ID }}
           secret-apple-team-id: ${{ secrets.APPLE_TEAM_ID }}
           secret-apple-password: ${{ secrets.APP_SPECIFIC_PASSWORD }}
+          secret-android-keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          secret-android-keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          secret-android-keystore-user: ${{ secrets.ANDROID_KEYSTORE_USER }}
 ```
+
+For all of the job inputs that need to be secrets, add them to the github actions secrets.
 
 # Apple Secrets configuration
 
