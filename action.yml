@@ -203,11 +203,13 @@ runs:
       if: env.platform-type == 'android'
       shell: bash
       run: |
-        mkdir -p android/build
-        version_dot=$(echo "${{ inputs.blazium-version }}" | sed 's/-/./')
-        echo "$version_dot" >> android/.build_version
-        unzip ${{ env.BLAZIUM_TEMPLATE }}/android_source.zip  -d android/build
-        ls android/build
+        #mkdir -p android/build
+        #version_dot=$(echo "${{ inputs.blazium-version }}" | sed 's/-/./')
+        # Replace gradle_build/android_source_template="" with the path to android_source.zip
+        sed -i '' "s/gradle_build\/android_source_template=\"\"/gradle_build\/android_source_template=\"${{ env.BLAZIUM_TEMPLATE }}/android_source.zip\"/g" android/build.gradle
+        #echo "$version_dot" >> android/.build_version
+        #unzip ${{ env.BLAZIUM_TEMPLATE }}/android_source.zip  -d android/build
+        #ls android/build
 
     - name: Setup WINE and rcedit 🍷
       shell: bash
