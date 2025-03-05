@@ -1,0 +1,352 @@
+name: Build Blazium Game Action
+
+description: >-
+  Build Blaizum Game for use with macOS, Windows, and Linux CI/CD runners.
+
+author: 'Blazium'
+branding:
+  icon: 'cpu'
+  color: 'white'
+inputs:
+  blazium-version:
+    description: >-
+      Blazium Engine version: e.g., 0.1.184-nightly, 0.1.188-nightly, etc. Must include major, minor, and patch.
+    default: 0.3.74-nightly
+  game-name:
+    description: >-
+      Game name: e.g., ProjectHangman
+    required: true
+  platform-name:
+    description: >-
+      Platform to build for name. eg. Windows Desktop x86_64, Linux x86_64, etc. Must match version in editor.
+    required: true
+  secret-macos-build-certificate-base64:
+    description: >-
+      Base64 encoded certificate for macOS.
+  secret-p12-password:
+    description: >-
+      P12 password for the certificate.
+  secret-keychain-password:
+    description: >-
+      Keychain password.
+  secret-ios-distribution-certificate-base64:
+    description: >-
+      Base64 encoded distribution certificate for iOS.
+  secret-ios-deploy-provision-profile-ios-base64:
+    description: >-
+      Base64 encoded provisioning profile for iOS.
+  secret-apple-id:
+    description: >-
+      Apple ID.
+  secret-apple-team-id:
+    description: >-
+      Apple Team ID.
+  secret-apple-password:
+    description: >-
+      Apple password or App Specific Password.
+
+runs:
+  using: composite
+  steps:
+    - name: Set env vars
+      shell: bash
+      run: |
+        if [ "${{ inputs.platform-name }}" == "Windows Desktop x86_64" ]; then
+          echo "platform-extension=.exe" >> $GITHUB_ENV
+          echo "platform-type=windows" >> $GITHUB_ENV
+          echo "artifact-name=windows-x86_64" >> $GITHUB_ENV
+        elif [ "${{ inputs.platform-name }}" == "Windows Desktop x86_32" ]; then
+          echo "platform-extension=.exe" >> $GITHUB_ENV
+          echo "platform-type=windows" >> $GITHUB_ENV
+          echo "artifact-name=windows-x86_32" >> $GITHUB_ENV
+        elif [ "${{ inputs.platform-name }}" == "Windows Desktop arm64" ]; then
+          echo "platform-extension=.exe" >> $GITHUB_ENV
+          echo "platform-type=windows" >> $GITHUB_ENV
+          echo "artifact-name=windows-arm64" >> $GITHUB_ENV
+        elif [ "${{ inputs.platform-name }}" == "Windows Desktop arm32" ]; then
+          echo "platform-extension=.exe" >> $GITHUB_ENV
+          echo "platform-type=windows" >> $GITHUB_ENV
+          echo "artifact-name=windows-arm32" >> $GITHUB_ENV
+        elif [ "${{ inputs.platform-name }}" == "Linux x86_64" ]; then
+          echo "platform-extension=.x86_64" >> $GITHUB_ENV
+          echo "platform-type=linux" >> $GITHUB_ENV
+          echo "artifact-name=linux-x86_64" >> $GITHUB_ENV
+        elif [ "${{ inputs.platform-name }}" == "Linux x86_32" ]; then
+          echo "platform-extension=.x86_32" >> $GITHUB_ENV
+          echo "platform-type=linux" >> $GITHUB_ENV
+          echo "artifact-name=linux-x86_32" >> $GITHUB_ENV
+        elif [ "${{ inputs.platform-name }}" == "macOS" ]; then
+          echo "platform-extension=.app" >> $GITHUB_ENV
+          echo "platform-type=macos" >> $GITHUB_ENV
+          echo "artifact-name=macos" >> $GITHUB_ENV
+        elif [ "${{ inputs.platform-name }}" == "iOS" ]; then
+          echo "platform-extension=.xcarchive" >> $GITHUB_ENV
+          echo "platform-type=ios" >> $GITHUB_ENV
+          echo "artifact-name=ios" >> $GITHUB_ENV
+        elif [ "${{ inputs.platform-name }}" == "Android" ]; then
+          echo "platform-extension=.aab" >> $GITHUB_ENV
+          echo "platform-type=android" >> $GITHUB_ENV
+          echo "artifact-name=android" >> $GITHUB_ENV
+        elif [ "${{ inputs.platform-name }}" == "Web" ]; then
+          echo "platform-extension=.html" >> $GITHUB_ENV
+          echo "platform-type=web" >> $GITHUB_ENV
+          echo "artifact-name=web" >> $GITHUB_ENV
+        fi
+    - uses: blazium-engine/setup-blazium@master
+      name: 🤖 Setup Blazium
+      with:
+        version: ${{ inputs.blazium-version }}
+        download_template: true
+
+    # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+    - name: Install the Apple certificate and provisioning profile for macOS
+      shell: bash
+      if: inputs.platform-type == 'macos'
+      env:
+        # Developer ID Certificate
+        BUILD_CERTIFICATE_BASE64: ${{ inputs.secret-macos-build-certificate-base64 }}
+        P12_PASSWORD: ${{ inputs.secret-p12-password }}
+        KEYCHAIN_PASSWORD: ${{ inputs.secret-keychain-password }}
+      run: |
+        # create variables
+        CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+        # import certificate and provisioning profile from secrets
+        echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+
+        # create temporary keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+        # import certificate to keychain
+        security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        security list-keychain -d user -s $KEYCHAIN_PATH
+
+        SIGNING_IDENTITY=$(security find-identity -p codesigning -v | awk -F'"' 'NR==1 {print $2}')
+        echo "APPLE_SIGNING_IDENTITY=$SIGNING_IDENTITY" >> $GITHUB_ENV
+
+    # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
+    - name: Install the Apple certificate and provisioning profile for iOS
+      shell: bash
+      if: inputs.platform-type == 'ios'
+      env:
+        DISTRIBUTION_CERTIFICATE_BASE64: ${{ inputs.secret-ios-distribution-certificate-base64 }}
+        P12_PASSWORD: ${{ inputs.secret-p12-password }}
+        DEPLOY_PROVISION_PROFILE_IOS_BASE64: ${{ inputs.secret-ios-deploy-provision-profile-ios-base64 }}
+        KEYCHAIN_PASSWORD: ${{ inputs.secret-keychain-password }}
+      run: |
+        # create variables
+        BASE_DEPLOY_CERTIFICATE_PATH=$RUNNER_TEMP/base_certificate.p12
+        PP_PATH=$RUNNER_TEMP/ios_deploy_pp.mobileprovision
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+        # import certificate and provisioning profile from secrets
+        echo -n "$DISTRIBUTION_CERTIFICATE_BASE64" | base64 --decode -o $BASE_DEPLOY_CERTIFICATE_PATH
+        echo -n "$DEPLOY_PROVISION_PROFILE_IOS_BASE64" | base64 --decode -o $PP_PATH
+
+        # create temporary keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+        # import certificate to keychain
+        # Import first certificate
+        security import $BASE_DEPLOY_CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        security list-keychain -d user -s $KEYCHAIN_PATH
+        security find-identity -p basic -v
+        SIGNING_IDENTITY=$(security find-identity -p basic -v | awk -F'"' 'NR==1 {print $2}')
+        echo "DEPLOY_SIGNING_IDENTITY=$SIGNING_IDENTITY" >> $GITHUB_ENV
+
+        # apply provisioning profile
+        
+        mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+
+        # Set UUID
+        echo "PP_UUID=$(grep -a -A 1 'UUID' $PP_PATH | grep string | sed -e "s|<string>||" -e "s|</string>||" | tr -d '\t')" >> $GITHUB_ENV
+        uuid=`grep UUID -A1 -a $PP_PATH | grep -io "[-A-F0-9]\{36\}"`
+        cp $PP_PATH "$HOME/Library/MobileDevice/Provisioning Profiles/$uuid.mobileprovision"
+        
+        ls "$HOME/Library/MobileDevice/Provisioning Profiles"
+
+    - name: Set up JDK 17
+      if: inputs.platform-type == 'android'
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Android SDK
+      if: inputs.platform-type == 'android'
+      uses: android-actions/setup-android@v3
+
+    - name: Set Android SDK path in Editor settings
+      if: inputs.platform-type == 'android'
+      shell: bash
+      env:
+        SETTINGS: |
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "/usr/local/lib/android/sdk"
+          export/android/shutdown_adb_on_exit = true
+          export/android/force_system_user = false
+          export/android/debug_keystore = "${{ github.action_path }}/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+      run: |
+        mkdir -p ~/.config/godot/
+        printf "%s\n" "$SETTINGS" > ~/.config/godot/editor_settings-4.tres
+
+    - name: Install Android build template
+      if: inputs.platform-type == 'android'
+      shell: bash
+      run: |
+        mkdir -p android/plugins
+        mkdir -p android/build
+        touch android/build/.gdignore
+        # Replace - with .
+        version_dot=$(echo "${{ inputs.blazium-version }}" | sed 's/-/./')
+        echo "$version_dot" >> android/.build_version
+        unzip ${{ env.BLAZIUM_TEMPLATE }}/android_source.zip  -d android/build
+
+    - name: Setup WINE and rcedit 🍷
+      shell: bash
+      if: inputs.platform-type == 'windows'
+      run: |
+        # Avoid interaction during installation
+        export DEBIAN_FRONTEND=noninteractive
+        export WINEDEBUG=-all
+        export DISPLAY="localhost:0" 
+
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends wine32 wine64 imagemagick wine-stable icnsutils --fix-missing
+        sudo wget https://github.com/electron/rcedit/releases/download/v1.1.1/rcedit-x64.exe
+        sudo mkdir -v -p ~/.local/share/rcedit
+        sudo mv rcedit-x64.exe ~/.local/share/rcedit
+        sudo ls ~/.local/share/rcedit
+
+    - name: Set rcedit path in the Editor settings
+      if: inputs.platform-type == 'windows'
+      shell: bash
+      env:
+        SETTINGS: |
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/windows/wine = "/usr/bin/wine"
+          export/windows/rcedit = "$HOME/.local/share/rcedit/rcedit-x64.exe"
+      run: |
+        mkdir -p ~/.config/godot/
+        printf "%s\n" "$SETTINGS" > ~/.config/godot/editor_settings-4.tres
+
+    - name: 🔬 Verify Setup
+      shell: bash
+      run: |
+        Blazium --version
+
+    - name: 🚀 Build Game
+      shell: bash
+      if: inputs.platform-type != 'web' && inputs.platform-type != 'ios'
+      run: |
+        mkdir -p build/
+        Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
+    
+    - name: 🚀 Build Project iOS
+      shell: bash
+      if: inputs.platform-type != 'web' && inputs.platform-type == 'ios'
+      run: |
+        mkdir -p project/
+        Blazium --headless --export-release "${{ inputs.platform-name }}" project/${{ inputs.game-name }}${{ env.platform-extension }}
+    
+    - name: 🚀 Build Web Game
+      shell: bash
+      if: inputs.platform-type == 'web'
+      run: |
+        mkdir -p build/
+        Blazium --headless --export-release "${{ inputs.platform-name }}" build/index${{ env.platform-extension }}
+    
+    - name: Build for iOS
+      shell: bash
+      working-directory: project
+      if: inputs.platform-type == 'ios'
+      run: |
+        ls "$HOME/Library/MobileDevice/Provisioning Profiles"
+        xcodebuild -resolvePackageDependencies
+
+        # Build
+        #set -eo pipefail
+        echo "Using following:"
+        echo Certificate identity: $DEPLOY_SIGNING_IDENTITY
+        echo PP UUID $PP_UUID
+        ls "$HOME/Library/MobileDevice/Provisioning Profiles/"
+        security find-identity -v -p codesigning
+        cp ../deploy/ios/exportOptions.plist .
+        # Replace PP_UUID
+        sed -i '' "s/PP_UUID/$PP_UUID/g" exportOptions.plist
+        # Replace APPLE_TEAM_ID
+        sed -i '' "s/APPLE_TEAM_ID/${{ inputs.secret-apple-team-id }}/g" exportOptions.plist
+        xcodebuild clean archive \
+          -verbose \
+          -scheme ${{ inputs.game-name }} \
+          -configuration "Release" \
+          -sdk iphoneos \
+          -archivePath "${{ inputs.game-name }}.xcarchive" \
+          -destination "generic/platform=iOS,name=Any iOS Device" \
+          OTHER_CODE_SIGN_FLAGS="--keychain $RUNNER_TEMP/app-signing.keychain-db" \
+          CODE_SIGN_STYLE=Manual \
+          PROVISIONING_PROFILE=$PP_UUID \
+          CODE_SIGN_IDENTITY="$DEPLOY_SIGNING_IDENTITY"
+        
+        # Export ipa
+        set -eo pipefail
+        xcodebuild -archivePath "${{ inputs.game-name }}.xcarchive" \
+          -exportOptionsPlist exportOptions.plist \
+          -exportPath build \
+          -allowProvisioningUpdates \
+          -exportArchive
+        
+        mkdir -p ../build
+        mv build/${{ inputs.game-name }}.ipa ../build/${{ inputs.game-name }}.ipa
+
+    - name: Sign for macos
+      shell: bash
+      if: inputs.platform-type == 'macos'
+      working-directory: build
+      run: |
+        # Remove wrong attributes
+        xattr -cr ${{ inputs.game-name }.app
+
+        # Set permissions and sign the application
+        chmod +x ${{ inputs.game-name }.app
+
+        codesign --deep --force --options=runtime --verbose --timestamp \
+          --entitlements ../deploy/mac/entitlements.plist --sign "${{ env.APPLE_SIGNING_IDENTITY }}" \
+          ${{ inputs.game-name }.app
+
+        # Package the application into a zip file
+        zip -q -9 -r ${{ inputs.game-name }.zip ${{ inputs.game-name }.app
+
+        /Applications/Xcode.app/Contents/Developer/usr/bin/notarytool store-credentials "AppleID" --apple-id "${{ inputs.secret-apple-id }}" --password "${{ inputs.secret-apple-password }}" --team-id "${{ inputs.secret-apple-team-id }}"
+
+        /Applications/Xcode.app/Contents/Developer/usr/bin/notarytool submit ${{ inputs.game-name }.zip --wait --keychain-profile "AppleID"
+
+        xcrun stapler staple ${{ inputs.game-name }.app
+        rm ${{ inputs.game-name }.zip
+
+    - name: List Files
+      shell: bash
+      run: |
+        ls -la
+        ls -la build
+
+    - name: 📦 Upload ${{ inputs.platform-name }} Build
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ${{ inputs.platform-name }}-${{ inputs.platform-artifact-name }}
+        path: build/**
+        if-no-files-found: error
+
