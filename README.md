@@ -52,9 +52,9 @@ jobs:
 
 The deploy secrets are needed for deploying to App Store or Mac App Store.
 
-# Apple Mac Flow for Export
+## Apple Mac Flow for Export
 
-## 1. How to get Certificate P12 to Mac
+### 1. How to get Certificate P12 to Mac
 
 Prerequisites:
 
@@ -73,7 +73,7 @@ Certificate Types:
 - Mac App Distribution - For Mac Binary to be sent to Mac App Store (inside the installer)
 - Mac Installer Distribution - For Mac Installer (contains the Mac Binary) to be sent to the Mac App Store
 
-### Generate base64 from Certificate P12
+#### Generate base64 from Certificate P12
 
 To use them in CI/CD you need to make them in base64 so they can be put in env vars:
 ```sh
@@ -81,14 +81,14 @@ To use them in CI/CD you need to make them in base64 so they can be put in env v
 base64 -i DeveloperID.p12 > certificate_development_id_base64.txt
 ```
 
-## 2. Obtain the certificates
+### 2. Obtain the certificates
 
 Prerquisites:
 - Developer ID Certificate
 - P12 Password
 - Keychain Password (you set this)
 
-### How to list certificates installed
+#### How to list certificates installed
 
 You installed the certificate by a file, but now you need a name to use it. In order to get that name, you can do:
 
@@ -96,7 +96,7 @@ You installed the certificate by a file, but now you need a name to use it. In o
 security find-identity -v -p codesigning
 ```
 
-## 3. Build the mac app without signing and without notarization
+### 3. Build the mac app without signing and without notarization
 
 There are 3 types of mac apps:
 - .app: Folder with files
@@ -105,7 +105,7 @@ There are 3 types of mac apps:
 
 You want to use the .app and create a .pkg with it. Using .dmg is also possible but more difficult.
 
-## 4. Sign the app
+### 4. Sign the app
 
 Prerequisite:
 
@@ -131,16 +131,16 @@ Prerequisite:
 
 You need to sign the app using the `Developer ID Application` for your team if you want to export it (outside of Mac App Store).
 
-# Apple Mac Flow for Publish
+## Apple Mac Flow for Publish
 
-## 1. Provisioning Profile
+### 1. Provisioning Profile
 
 In order to deploy to Mac App Store you need a `Mac App Store Connect` Distribution Profile from `https://developer.apple.com/account/resources/profiles/add`. The distribution profile is a text file that contains also some entitlements, these will be added to the entitlements file later on.
 
 How to get it:
 - Go to Certificates, Identifiers & Profiles: `https://developer.apple.com/account/resources/profiles/add`. Add a provisioning profile of type `Mac App Store Connect` at the `Distribution` section. Select App Id that matches your game. This is how it will know to link the provisioning profile with the certificate. Then click Next, Next..
 
-## 2. Obtain the certificates
+### 2. Obtain the certificates
 
 Prerquisites:
 - Mac App Distribution
@@ -149,7 +149,7 @@ Prerquisites:
 - Keychain Password (you set this)
 - Provisioning Profile of type `Mac App Store Connect`
 
-## 3. Code Sign
+### 3. Code Sign
 
 Prerequisites:
 - `DEPLOY_SIGNING_IDENTITY` you obtained from Step 2.
@@ -215,26 +215,39 @@ You would copy and would have:
 </plist>
 ```
 
-## 4. Make an installer
+### 4. Make an installer
 
 Prerequisites:
 - `INSTALL_SIGNING_IDENTITY` you obtained from Step 2.
 
-## 5. Deploy to Test Flight
+### 5. Deploy to Test Flight
 
 Prerequisites:
 - `APPLE_ID`: Your apple id (usually email)
 - `APP_SPECIFIC_PASSWORD`: https://support.apple.com/en-us/102654
 
 
-# Apple iOS Flow for Publish
+## Apple iOS Flow for Publish
 
 This flow works pretty well from Godot. All you need to do is set in Godot same stuff in export window as for actions:
 
-## 1. Obtain certificates and provisioning profile
+### 1. Obtain certificates and provisioning profile
 
 Prerequisites:
 - `DISTRIBUTION_CERTIFICATE_BASE64`: Apple Distribution Certificate
 - `P12_PASSWORD`: Password used to encrypt P12 Certificates
 - `DEPLOY_PROVISION_PROFILE_IOS_BASE64`: iOS Deploy Certificate for App
 - `KEYCHAIN_PASSWORD`: Keychain Password (you enter this manually to what you want)
+
+# Android Secrets configuration
+
+For android you need the :
+- secret-android-keystore-base64: Base64 encoded keystore for Android.
+- secret-android-keystore-password: Android keystore password.
+- secret-android-keystore-user: Android keystore alias.
+
+How to generate android keystore:
+
+```sh
+keytool -genkey -v -keystore release.keystore -alias alias_name -keyalg RSA -keysize 2048 -validity 10000
+```

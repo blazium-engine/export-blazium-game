@@ -44,6 +44,15 @@ inputs:
   secret-apple-password:
     description: >-
       Apple password or App Specific Password.
+  secret-android-keystore-base64:
+    description: >-
+      Base64 encoded keystore for Android.
+  secret-android-keystore-password:
+    description: >-
+      Android keystore password.
+  secret-android-keystore-user:
+    description: >-
+      Android keystore alias.
 
 runs:
   using: composite
@@ -192,11 +201,12 @@ runs:
           export/android/android_sdk_path = "/usr/local/lib/android/sdk"
           export/android/shutdown_adb_on_exit = true
           export/android/force_system_user = false
-          export/android/debug_keystore = "${{ github.action_path }}/debug.keystore"
-          export/android/debug_keystore_user = "androiddebugkey"
-          export/android/debug_keystore_pass = "android"
+          export/android/release_keystore = "${{ github.action_path }}/release.keystore"
+          export/android/release_keystore_user = "${{ inputs.secret-android-keystore-user }}"
+          export/android/release_keystore_pass = " ${{ inputs.secret-android-keystore-password }}"
       run: |
         mkdir -p ~/.config/godot/
+        echo -n "${{ inputs.secret-android-keystore-base64 }}" | base64 --decode -o ${{ github.action_path }}/release.keystore
         printf "%s\n" "$SETTINGS" > ~/.config/godot/editor_settings-4.tres
 
     - name: Install Android build template
