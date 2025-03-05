@@ -204,6 +204,8 @@ runs:
       shell: bash
       run: |
         mkdir -p android/build
+        version_dot=$(echo "${{ inputs.blazium-version }}" | sed 's/-/./')
+        echo "$version_dot" >> android/.build_version
         unzip ${{ env.BLAZIUM_TEMPLATE }}/android_source.zip  -d android/build
         ls android/build
 
