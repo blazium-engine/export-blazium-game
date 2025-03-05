@@ -203,10 +203,10 @@ runs:
           export/android/force_system_user = false
       run: |
         mkdir -p ~/.config/godot/
-        echo -n "${{ inputs.secret-android-keystore-base64 }}" | base64 --decode > ${{ github.workspace }}/release.keystore
-        chmod 600 "${{ github.workspace }}/release.keystore"
+        echo -n "${{ inputs.secret-android-keystore-base64 }}" | base64 --decode > release.keystore
+        chmod 600 "release.keystore"
         ls ${{ github.workspace }}
-        echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=\"${{ github.workspace }}/release.keystore\"" >> $GITHUB_ENV
+        echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=\"release.keystore\"" >> $GITHUB_ENV
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=\"${{ inputs.secret-android-keystore-user }}\"" >> $GITHUB_ENV
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=\"${{ inputs.secret-android-keystore-password }}\"" >> $GITHUB_ENV
         echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=\"${{ github.workspace }}/release.keystore\"" >> $GITHUB_ENV
