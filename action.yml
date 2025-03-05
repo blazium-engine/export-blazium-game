@@ -317,24 +317,24 @@ runs:
       working-directory: build
       run: |
         # Remove wrong attributes
-        xattr -cr ${{ inputs.game-name }.app
+        xattr -cr ${{ inputs.game-name }}.app
 
         # Set permissions and sign the application
-        chmod +x ${{ inputs.game-name }.app
+        chmod +x ${{ inputs.game-name }}.app
 
         codesign --deep --force --options=runtime --verbose --timestamp \
           --entitlements ../deploy/mac/entitlements.plist --sign "${{ env.APPLE_SIGNING_IDENTITY }}" \
-          ${{ inputs.game-name }.app
+          ${{ inputs.game-name }}.app
 
         # Package the application into a zip file
-        zip -q -9 -r ${{ inputs.game-name }.zip ${{ inputs.game-name }.app
+        zip -q -9 -r ${{ inputs.game-name }}.zip ${{ inputs.game-name }}.app
 
         /Applications/Xcode.app/Contents/Developer/usr/bin/notarytool store-credentials "AppleID" --apple-id "${{ inputs.secret-apple-id }}" --password "${{ inputs.secret-apple-password }}" --team-id "${{ inputs.secret-apple-team-id }}"
 
-        /Applications/Xcode.app/Contents/Developer/usr/bin/notarytool submit ${{ inputs.game-name }.zip --wait --keychain-profile "AppleID"
+        /Applications/Xcode.app/Contents/Developer/usr/bin/notarytool submit ${{ inputs.game-name }}.zip --wait --keychain-profile "AppleID"
 
-        xcrun stapler staple ${{ inputs.game-name }.app
-        rm ${{ inputs.game-name }.zip
+        xcrun stapler staple ${{ inputs.game-name }}.app
+        rm ${{ inputs.game-name }}.zip
 
     - name: List Files
       shell: bash

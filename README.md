@@ -1,5 +1,11 @@
 # Blazium Game Build Action
 
+Prerequisites:
+- `export_presets.cfg`: A file created with what targets you want to export:
+  * For Android, enable AAB.
+  * For Windows, select what architecture you want for each export.
+  * For Linux, select what architecture you want for each export.
+
 Reusable Action that build a Blazium game. Example usage:
 
 ```yml
