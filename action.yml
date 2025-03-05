@@ -215,10 +215,10 @@ runs:
       shell: bash
       run: |
         mkdir -p android/build
-        chmod 600 "${{ env.BLAZIUM_TEMPLATE }}/android_source.zip"
-        sed -i "s|gradle_build/android_source_template=\"\"|gradle_build/android_source_template=\"${{ env.BLAZIUM_TEMPLATE }}/android_source.zip\"|g" export_presets.cfg
-        echo "${{ env.BLAZIUM_TEMPLATE }}/android_source.zip [1]" >> android/.build_version
-        unzip ${{ env.BLAZIUM_TEMPLATE }}/android_source.zip  -d android/build
+        chmod 600 "$BLAZIUM_TEMPLATE/android_source.zip"
+        sed -i "s|gradle_build/android_source_template=\"\"|gradle_build/android_source_template=\"$BLAZIUM_TEMPLATE/android_source.zip\"|g" export_presets.cfg
+        echo "$BLAZIUM_TEMPLATE/android_source.zip [1]" >> android/.build_version
+        unzip $BLAZIUM_TEMPLATE/android_source.zip  -d android/build
 
     - name: Setup WINE and rcedit 🍷
       shell: bash
