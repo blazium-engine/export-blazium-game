@@ -264,7 +264,8 @@ runs:
       run: |
         mkdir -p build/
         echo "$GODOT_ANDROID_KEYSTORE_RELEASE_PATH"
-        sudo ${{ env.BLAZIUM_EDITOR }} --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
+        Blazium --headless --path . -e
+        Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Project iOS
       shell: bash
