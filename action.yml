@@ -101,7 +101,7 @@ runs:
     # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
     - name: Install the Apple certificate and provisioning profile for macOS
       shell: bash
-      if: inputs.platform-type == 'macos'
+      if: env.platform-type == 'macos'
       env:
         # Developer ID Certificate
         BUILD_CERTIFICATE_BASE64: ${{ inputs.secret-macos-build-certificate-base64 }}
@@ -130,7 +130,7 @@ runs:
     # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
     - name: Install the Apple certificate and provisioning profile for iOS
       shell: bash
-      if: inputs.platform-type == 'ios'
+      if: env.platform-type == 'ios'
       env:
         DISTRIBUTION_CERTIFICATE_BASE64: ${{ inputs.secret-ios-distribution-certificate-base64 }}
         P12_PASSWORD: ${{ inputs.secret-p12-password }}
@@ -171,18 +171,18 @@ runs:
         ls "$HOME/Library/MobileDevice/Provisioning Profiles"
 
     - name: Set up JDK 17
-      if: inputs.platform-type == 'android'
+      if: env.platform-type == 'android'
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
     - name: Setup Android SDK
-      if: inputs.platform-type == 'android'
+      if: env.platform-type == 'android'
       uses: android-actions/setup-android@v3
 
     - name: Set Android SDK path in Editor settings
-      if: inputs.platform-type == 'android'
+      if: env.platform-type == 'android'
       shell: bash
       env:
         SETTINGS: |
@@ -200,20 +200,15 @@ runs:
         printf "%s\n" "$SETTINGS" > ~/.config/godot/editor_settings-4.tres
 
     - name: Install Android build template
-      if: inputs.platform-type == 'android'
+      if: env.platform-type == 'android'
       shell: bash
       run: |
-        mkdir -p android/plugins
-        mkdir -p android/build
-        touch android/build/.gdignore
-        # Replace - with .
-        version_dot=$(echo "${{ inputs.blazium-version }}" | sed 's/-/./')
-        echo "$version_dot" >> android/.build_version
         unzip ${{ env.BLAZIUM_TEMPLATE }}/android_source.zip  -d android/build
+        ls android/build
 
     - name: Setup WINE and rcedit 🍷
       shell: bash
-      if: inputs.platform-type == 'windows'
+      if: env.platform-type == 'windows'
       run: |
         # Avoid interaction during installation
         export DEBIAN_FRONTEND=noninteractive
@@ -229,7 +224,7 @@ runs:
         sudo ls ~/.local/share/rcedit
 
     - name: Set rcedit path in the Editor settings
-      if: inputs.platform-type == 'windows'
+      if: env.platform-type == 'windows'
       shell: bash
       env:
         SETTINGS: |
@@ -249,21 +244,21 @@ runs:
 
     - name: 🚀 Build Game
       shell: bash
-      if: inputs.platform-type != 'web' && inputs.platform-type != 'ios'
+      if: env.platform-type != 'web' && env.platform-type != 'ios'
       run: |
         mkdir -p build/
         Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Project iOS
       shell: bash
-      if: inputs.platform-type != 'web' && inputs.platform-type == 'ios'
+      if: env.platform-type != 'web' && env.platform-type == 'ios'
       run: |
         mkdir -p project/
         Blazium --headless --export-release "${{ inputs.platform-name }}" project/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Web Game
       shell: bash
-      if: inputs.platform-type == 'web'
+      if: env.platform-type == 'web'
       run: |
         mkdir -p build/
         Blazium --headless --export-release "${{ inputs.platform-name }}" build/index${{ env.platform-extension }}
@@ -271,7 +266,7 @@ runs:
     - name: Build for iOS
       shell: bash
       working-directory: project
-      if: inputs.platform-type == 'ios'
+      if: env.platform-type == 'ios'
       run: |
         ls "$HOME/Library/MobileDevice/Provisioning Profiles"
         xcodebuild -resolvePackageDependencies
@@ -313,7 +308,7 @@ runs:
 
     - name: Sign for macos
       shell: bash
-      if: inputs.platform-type == 'macos'
+      if: env.platform-type == 'macos'
       working-directory: build
       run: |
         # Remove wrong attributes
@@ -346,7 +341,7 @@ runs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: ${{ inputs.platform-name }}-${{ inputs.platform-artifact-name }}
+        name: ${{ inputs.platform-name }}-${{ env.artifact-name }}
         path: build/**
         if-no-files-found: error
 
