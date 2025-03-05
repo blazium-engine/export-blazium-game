@@ -205,6 +205,7 @@ runs:
         mkdir -p ~/.config/godot/
         echo -n "${{ inputs.secret-android-keystore-base64 }}" | base64 --decode > /home/runner/work/release.keystore
         chmod 600 "/home/runner/work/release.keystore"
+        cat /home/runner/work/release.keystore
         ls /home/runner/work/
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=\"/home/runner/work/release.keystore\"" >> $GITHUB_ENV
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=\"${{ inputs.secret-android-keystore-user }}\"" >> $GITHUB_ENV
