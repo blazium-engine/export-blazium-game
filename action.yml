@@ -203,6 +203,7 @@ runs:
       if: env.platform-type == 'android'
       shell: bash
       run: |
+        mkdir -p android/build
         unzip ${{ env.BLAZIUM_TEMPLATE }}/android_source.zip  -d android/build
         ls android/build
 
