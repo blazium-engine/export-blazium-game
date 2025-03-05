@@ -265,6 +265,7 @@ runs:
       if: env.platform-type != 'web' && env.platform-type != 'ios'
       run: |
         mkdir -p build/
+        printenv
         Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Project iOS
