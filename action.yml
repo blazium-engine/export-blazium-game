@@ -217,7 +217,6 @@ runs:
       run: |
         mkdir -p android/build
         chmod 600 "$BLAZIUM_TEMPLATE/android_source.zip"
-        cat ./godot/export_credentials.cfg
         #sed -i "s|gradle_build/android_source_template=\"\"|gradle_build/android_source_template=\"$BLAZIUM_TEMPLATE/android_source.zip\"|g" export_presets.cfg
         echo "4.3.stable" >> android/.build_version
         unzip $BLAZIUM_TEMPLATE/android_source.zip  -d android/build
@@ -264,6 +263,7 @@ runs:
       run: |
         mkdir -p build/
         Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
+        cat ./godot/export_credentials.cfg
     
     - name: 🚀 Build Project iOS
       shell: bash
