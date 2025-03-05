@@ -215,7 +215,7 @@ runs:
       run: |
         mkdir -p android/build
         cp ${{ env.BLAZIUM_TEMPLATE }}/android_source.zip android_source.zip
-        sed -i "s|gradle_build/android_source_template=\"\"|gradle_build/android_source_template=\"android_source.zip\"|g" export_presets.cfg
+        sed -i "s|gradle_build/android_source_template=\"\"|gradle_build/android_source_template=\"./android_source.zip\"|g" export_presets.cfg
         echo "android_source.zip []" >> android/.build_version
         unzip android_source.zip  -d android/build
 
