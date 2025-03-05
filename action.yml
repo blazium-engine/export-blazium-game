@@ -265,7 +265,6 @@ runs:
         mkdir -p build/
         ls -lah /home/runner/work/release.keystore
         echo "$GODOT_ANDROID_KEYSTORE_RELEASE_PATH"
-        ls -lah "$GODOT_ANDROID_KEYSTORE_RELEASE_PATH"
         Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Project iOS
