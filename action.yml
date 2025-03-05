@@ -205,7 +205,6 @@ runs:
         mkdir -p ~/.config/godot/
         echo -n "${{ inputs.secret-android-keystore-base64 }}" | base64 --decode > ${{ github.workspace }}/release.keystore
         chmod 600 "${{ github.workspace }}/release.keystore"
-        cat ${{ github.workspace }}/release.keystore
         ls ${{ github.workspace }}
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=\"${{ github.workspace }}/release.keystore\"" >> $GITHUB_ENV
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=\"${{ inputs.secret-android-keystore-user }}\"" >> $GITHUB_ENV
@@ -263,8 +262,6 @@ runs:
       if: env.platform-type != 'web' && env.platform-type != 'ios'
       run: |
         mkdir -p build/
-        echo "$GODOT_ANDROID_KEYSTORE_RELEASE_PATH"
-        Blazium --headless --path . -e
         Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Project iOS
