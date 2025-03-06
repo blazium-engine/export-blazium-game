@@ -1,4 +1,4 @@
-name: Build Blazium Game Action
+name: Build Blazium Game
 
 description: >-
   Build Blaizum Game for use with macOS, Windows, and Linux CI/CD runners.
