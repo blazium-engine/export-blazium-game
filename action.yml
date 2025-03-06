@@ -268,7 +268,7 @@ runs:
       run: |
         mkdir -p build/
         printenv
-        GODOT_ANDROID_KEYSTORE_RELEASE_PATH="${{ github.workspace }}/release.keystore" && Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
+        GODOT_ANDROID_KEYSTORE_RELEASE_PATH="${{ github.workspace }}/release.keystore" && Blazium --verbose --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Project iOS
       shell: bash
