@@ -354,7 +354,12 @@ runs:
       shell: bash
       run: |
         ls -la
+        echo "first ls"
         ls -la build
+        echo "second ls"
+        ls -la android/build
+        echo "third ls"
+        ls -la bin
 
     - name: 📦 Upload ${{ inputs.platform-name }} Build
       uses: actions/upload-artifact@v4
