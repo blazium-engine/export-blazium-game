@@ -213,6 +213,7 @@ runs:
         echo "GODOT_ANDROID_KEYSTORE_DEBUG_USER=\"${{ inputs.secret-android-keystore-user }}\"" >> $GITHUB_ENV
         echo "GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=\"${{ inputs.secret-android-keystore-password }}\"" >> $GITHUB_ENV
         printf "%s\n" "$SETTINGS" > ~/.config/godot/editor_settings-4.tres
+        adb start-server
 
     - name: Install Android build template
       if: env.platform-type == 'android'
@@ -223,6 +224,7 @@ runs:
         #sed -i "s|gradle_build/android_source_template=\"\"|gradle_build/android_source_template=\"$BLAZIUM_TEMPLATE/android_source.zip\"|g" export_presets.cfg
         echo "4.3.stable" >> android/.build_version
         unzip $BLAZIUM_TEMPLATE/android_source.zip  -d android/build
+        adb version
 
     - name: Setup WINE and rcedit 🍷
       shell: bash
@@ -357,9 +359,12 @@ runs:
         echo "first ls"
         ls -la build
         echo "second ls"
-        ls -la android/build
+        ls -lah android/build
+        ls -lah android/build/build
         echo "third ls"
         ls -la bin
+        echo "find .aab"
+        find . -name "*.aab"
 
     - name: 📦 Upload ${{ inputs.platform-name }} Build
       uses: actions/upload-artifact@v4
