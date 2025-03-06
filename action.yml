@@ -199,21 +199,16 @@ runs:
 
           [resource]
           export/android/android_sdk_path = "/usr/local/lib/android/sdk"
-          #export/android/shutdown_adb_on_exit = true
-          #export/android/force_system_user = false
+          export/android/shutdown_adb_on_exit = true
+          export/android/force_system_user = false
       run: |
         mkdir -p ~/.config/godot/
         echo -n "${{ inputs.secret-android-keystore-base64 }}" | base64 --decode > ${{ github.workspace }}/release.keystore
         chmod +rw "${{ github.workspace }}/release.keystore"
-        ls -la ${{ github.workspace }}
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=\"${{ github.workspace }}/release.keystore\"" >> $GITHUB_ENV
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=\"${{ inputs.secret-android-keystore-user }}\"" >> $GITHUB_ENV
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=\"${{ inputs.secret-android-keystore-password }}\"" >> $GITHUB_ENV
-        echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=\"${{ github.workspace }}/release.keystore\"" >> $GITHUB_ENV
-        echo "GODOT_ANDROID_KEYSTORE_DEBUG_USER=\"${{ inputs.secret-android-keystore-user }}\"" >> $GITHUB_ENV
-        echo "GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=\"${{ inputs.secret-android-keystore-password }}\"" >> $GITHUB_ENV
         printf "%s\n" "$SETTINGS" > ~/.config/godot/editor_settings-4.tres
-        adb start-server
 
     - name: Install Android build template
       if: env.platform-type == 'android'
@@ -221,10 +216,8 @@ runs:
       run: |
         mkdir -p android/build
         chmod 600 "$BLAZIUM_TEMPLATE/android_source.zip"
-        #sed -i "s|gradle_build/android_source_template=\"\"|gradle_build/android_source_template=\"$BLAZIUM_TEMPLATE/android_source.zip\"|g" export_presets.cfg
         echo "4.3.stable" >> android/.build_version
         unzip $BLAZIUM_TEMPLATE/android_source.zip  -d android/build
-        adb version
 
     - name: Setup WINE and rcedit 🍷
       shell: bash
@@ -267,8 +260,7 @@ runs:
       if: env.platform-type != 'web' && env.platform-type != 'ios'
       run: |
         mkdir -p build/
-        printenv
-        GODOT_ANDROID_KEYSTORE_RELEASE_PATH="${{ github.workspace }}/release.keystore" && Blazium --verbose --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
+        GODOT_ANDROID_KEYSTORE_RELEASE_PATH="${{ github.workspace }}/release.keystore" && Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Project iOS
       shell: bash
@@ -356,15 +348,6 @@ runs:
       shell: bash
       run: |
         ls -la
-        echo "first ls"
-        ls -la build
-        echo "second ls"
-        ls -lah android/build
-        ls -lah android/build/build
-        echo "third ls"
-        ls -la bin
-        echo "find .aab"
-        find . -name "*.aab"
 
     - name: 📦 Upload ${{ inputs.platform-name }} Build
       uses: actions/upload-artifact@v4
