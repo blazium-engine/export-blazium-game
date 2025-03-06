@@ -11,7 +11,7 @@ inputs:
   blazium-version:
     description: >-
       Blazium Engine version: e.g., 0.1.184-nightly, 0.1.188-nightly, etc. Must include major, minor, and patch.
-    default: 0.3.74-nightly
+    required: true
   game-name:
     description: >-
       Game name: e.g., ProjectHangman
@@ -101,7 +101,7 @@ runs:
           echo "platform-type=web" >> $GITHUB_ENV
           echo "artifact-name=web" >> $GITHUB_ENV
         fi
-    - uses: blazium-engine/setup-blazium@master
+    - uses: blazium-engine/setup-blazium@v0.1.0
       name: 🤖 Setup Blazium
       with:
         version: ${{ inputs.blazium-version }}

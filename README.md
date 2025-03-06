@@ -2,11 +2,16 @@
 
 Prerequisites:
 - `export_presets.cfg`: A file created with what targets you want to export:
-  * For Android, enable AAB.
+  * For iOS, fill in the: `App Store Team ID`, `Bundle Identifier`.
+  * For macOS, fill in the: `Bundle Identifier`, `Apple Team ID`. Leave Code Signing and Notarizing disabled.
+  * For Android, enable AAB. Also set the `Package Unique Name`.
   * For Windows, select what architecture you want for each export.
   * For Linux, select what architecture you want for each export.
 
-Reusable Action that build a Blazium game. Example usage:
+
+Reusable Action that build a Blazium game. These actions build and sign the games.
+
+Example usage:
 
 ```yml
 jobs:
@@ -255,4 +260,10 @@ How to generate android keystore:
 
 ```sh
 keytool -genkey -v -keystore release.keystore -alias alias_name -keyalg RSA -keysize 2048 -validity 10000
+```
+
+To list aliases run:
+
+```sh
+keytool -v -list -keystore blazium.keystore
 ```
