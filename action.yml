@@ -259,7 +259,7 @@ runs:
       if: env.platform-type != 'web' && env.platform-type != 'ios'
       run: |
         mkdir -p build/
-        GODOT_ANDROID_KEYSTORE_RELEASE_PATH="${{ github.workspace }}/release.keystore" && Blazium --headless --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
+        GODOT_ANDROID_KEYSTORE_RELEASE_PATH="${{ github.workspace }}/release.keystore" && Blazium --headless --verbose --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Project iOS
       shell: bash
