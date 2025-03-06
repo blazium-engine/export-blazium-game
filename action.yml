@@ -188,7 +188,7 @@ runs:
 
     - name: Setup Android SDK
       if: env.platform-type == 'android'
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v2
 
     - name: Set Android SDK path in Editor settings
       if: env.platform-type == 'android'
