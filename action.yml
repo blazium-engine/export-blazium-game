@@ -214,7 +214,9 @@ runs:
       run: |
         mkdir -p android/build
         chmod 600 "$BLAZIUM_TEMPLATE/android_source.zip"
-        echo "4.3.stable" >> android/.build_version
+        # Replace - with .
+        version_dot=$(echo "${{ inputs.version }}" | sed 's/-/./')
+        echo "$version_dot" >> android/.build_version
         unzip $BLAZIUM_TEMPLATE/android_source.zip  -d android/build
         adb start-server
 
