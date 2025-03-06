@@ -347,6 +347,8 @@ runs:
       shell: bash
       run: |
         ls -la
+        # find .aab files
+        find . -name "*.aab"
 
     - name: 📦 Upload ${{ inputs.platform-name }} Build
       uses: actions/upload-artifact@v4
