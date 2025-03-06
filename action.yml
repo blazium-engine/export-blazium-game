@@ -343,6 +343,12 @@ runs:
         xcrun stapler staple ${{ inputs.game-name }}.app
         rm ${{ inputs.game-name }}.zip
 
+    - name: TEMPORARY Move Android .aab to build
+      if: env.platform-type == 'android'
+      shell: bash
+      run: |
+        cp ./android/build/build/outputs/bundle/standardRelease/build-standard-release.aab ./build/${{ env.GAME_NAME }}.aab
+
     - name: List Files
       shell: bash
       run: |
@@ -350,12 +356,6 @@ runs:
         ls -la build
         # find .aab files
         find . -name "*.aab"
-    
-    - name: TEMPORARY Move Android .aab to build
-      if: env.platform-type == 'android'
-      shell: bash
-      run: |
-        cp ./android/build/build/outputs/bundle/standardRelease/build-standard-release.aab ./build/${{ env.GAME_NAME }}.aab
 
     - name: 📦 Upload ${{ inputs.platform-name }} Build
       uses: actions/upload-artifact@v4
