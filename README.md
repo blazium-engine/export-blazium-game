@@ -1,4 +1,4 @@
-# Blazium Game Build Action
+# Export Blazium Game Action
 
 Prerequisites:
 - `export_presets.cfg`: A file created with what targets you want to export:
@@ -9,9 +9,18 @@ Prerequisites:
   * For Linux, select what architecture you want for each export.
 
 
-Reusable Action that build a Blazium game. These actions build and sign the games.
+Reusable Action that build a Blazium game. These actions build and sign the games. The `platform-name` has to match the export name you set up in the Export tab in Blazium Engine.
 
-Example usage:
+Sample usage:
+```yml
+- name: Build Game Linux
+  uses: blazium-engine/build-game@master
+  with:
+    game-name: MyGame
+    platform-name: Linux x86_64
+```
+
+Complete usage:
 
 ```yml
 jobs:

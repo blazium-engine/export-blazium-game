@@ -101,8 +101,8 @@ runs:
           echo "platform-type=web" >> $GITHUB_ENV
           echo "artifact-name=web" >> $GITHUB_ENV
         fi
-    - uses: blazium-engine/setup-blazium@v0.1.0
-      name: 🤖 Setup Blazium
+    - uses: blazium-engine/setup-blazium-engine@v0.1.0
+      name: 🤖 Setup Blazium Engine
       with:
         version: ${{ inputs.blazium-version }}
         download_template: true
