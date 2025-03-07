@@ -63,43 +63,33 @@ runs:
         if [ "${{ inputs.platform-name }}" == "Windows Desktop x86_64" ]; then
           echo "platform-extension=.exe" >> $GITHUB_ENV
           echo "platform-type=windows" >> $GITHUB_ENV
-          echo "artifact-name=windows-x86_64" >> $GITHUB_ENV
         elif [ "${{ inputs.platform-name }}" == "Windows Desktop x86_32" ]; then
           echo "platform-extension=.exe" >> $GITHUB_ENV
           echo "platform-type=windows" >> $GITHUB_ENV
-          echo "artifact-name=windows-x86_32" >> $GITHUB_ENV
         elif [ "${{ inputs.platform-name }}" == "Windows Desktop arm64" ]; then
           echo "platform-extension=.exe" >> $GITHUB_ENV
           echo "platform-type=windows" >> $GITHUB_ENV
-          echo "artifact-name=windows-arm64" >> $GITHUB_ENV
         elif [ "${{ inputs.platform-name }}" == "Windows Desktop arm32" ]; then
           echo "platform-extension=.exe" >> $GITHUB_ENV
           echo "platform-type=windows" >> $GITHUB_ENV
-          echo "artifact-name=windows-arm32" >> $GITHUB_ENV
         elif [ "${{ inputs.platform-name }}" == "Linux x86_64" ]; then
           echo "platform-extension=.x86_64" >> $GITHUB_ENV
           echo "platform-type=linux" >> $GITHUB_ENV
-          echo "artifact-name=linux-x86_64" >> $GITHUB_ENV
         elif [ "${{ inputs.platform-name }}" == "Linux x86_32" ]; then
           echo "platform-extension=.x86_32" >> $GITHUB_ENV
           echo "platform-type=linux" >> $GITHUB_ENV
-          echo "artifact-name=linux-x86_32" >> $GITHUB_ENV
         elif [ "${{ inputs.platform-name }}" == "macOS" ]; then
           echo "platform-extension=.app" >> $GITHUB_ENV
           echo "platform-type=macos" >> $GITHUB_ENV
-          echo "artifact-name=macos" >> $GITHUB_ENV
         elif [ "${{ inputs.platform-name }}" == "iOS" ]; then
           echo "platform-extension=.xcarchive" >> $GITHUB_ENV
           echo "platform-type=ios" >> $GITHUB_ENV
-          echo "artifact-name=ios" >> $GITHUB_ENV
         elif [ "${{ inputs.platform-name }}" == "Android" ]; then
           echo "platform-extension=.aab" >> $GITHUB_ENV
           echo "platform-type=android" >> $GITHUB_ENV
-          echo "artifact-name=android" >> $GITHUB_ENV
         elif [ "${{ inputs.platform-name }}" == "Web" ]; then
           echo "platform-extension=.html" >> $GITHUB_ENV
           echo "platform-type=web" >> $GITHUB_ENV
-          echo "artifact-name=web" >> $GITHUB_ENV
         fi
     - uses: blazium-engine/setup-blazium-engine@v0.1.0
       name: 🤖 Setup Blazium Engine
@@ -364,7 +354,7 @@ runs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: ${{ inputs.platform-name }}-${{ env.artifact-name }}
+        name: ${{ inputs.platform-name }}
         path: build/**
         if-no-files-found: error
 
