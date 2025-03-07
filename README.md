@@ -9,13 +9,14 @@ Prerequisites:
   * For Linux, select what architecture you want for each export.
 
 
-Reusable Action that build a Blazium game. These actions build and sign the games. The `platform-name` has to match the export name you set up in the Export tab in Blazium Engine.
+Reusable Action that build a Blazium game. These actions build and sign the games with the [Blazium Engine](https://blazium.app/download/prebuilt-binaries) of the version specified. The `platform-name` has to match the export name you set up in the Export tab in Blazium Engine.
 
 Sample usage:
 ```yml
 - name: Build Game Linux
   uses: blazium-engine/build-game@master
   with:
+    blazium-version: 0.3.88-nightly
     game-name: MyGame
     platform-name: Linux x86_64
 ```
@@ -50,6 +51,7 @@ jobs:
       - name: Build Game
         uses: blazium-engine/build-game@master
         with:
+          blazium-version: 0.3.88-nightly
           game-name: ${{ env.GAME_NAME }}
           platform-name: ${{ matrix.platform }}
           secret-macos-build-certificate-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
