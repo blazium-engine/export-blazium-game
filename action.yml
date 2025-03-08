@@ -271,13 +271,14 @@ runs:
     - uses: maxim-lobanov/setup-xcode@v1
       if: env.platform-type == 'ios'
       with:
-        xcode-version: latest-stable
+        xcode-version: 16.1
 
     - name: Build for iOS
       shell: bash
       working-directory: project
       if: env.platform-type == 'ios'
       run: |
+        xcodebuild -showsdks
         ls "$HOME/Library/MobileDevice/Provisioning Profiles"
         xcodebuild -resolvePackageDependencies
 
