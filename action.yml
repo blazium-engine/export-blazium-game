@@ -53,6 +53,10 @@ inputs:
   secret-android-keystore-user:
     description: >-
       Android keystore alias.
+  use-cache:
+    description: >-
+      Use cache.
+    default: 'true'
 
 runs:
   using: composite
@@ -91,11 +95,12 @@ runs:
           echo "platform-extension=.html" >> $GITHUB_ENV
           echo "platform-type=web" >> $GITHUB_ENV
         fi
-    - uses: blazium-engine/setup-blazium-engine@v0.1.0
+    - uses: blazium-engine/setup-blazium-engine@master
       name: 🤖 Setup Blazium Engine
       with:
         version: ${{ inputs.blazium-version }}
         download_template: true
+        use-cache: ${{ inputs.use-cache }}
 
     # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
     - name: Install the Apple certificate and provisioning profile for macOS
