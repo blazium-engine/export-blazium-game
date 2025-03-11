@@ -14,7 +14,7 @@ Reusable Action that build a Blazium game. These actions build and sign the game
 Sample usage:
 ```yml
 - name: Build Game Linux
-  uses: blazium-engine/build-game@master
+  uses: blazium-engine/export-blazium-game@master
   with:
     blazium-version: 0.3.88-nightly
     game-name: MyGame
@@ -49,7 +49,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build Game
-        uses: blazium-engine/build-game@master
+        uses: blazium-engine/export-blazium-game@master
         with:
           blazium-version: 0.3.88-nightly
           game-name: ${{ env.GAME_NAME }}
