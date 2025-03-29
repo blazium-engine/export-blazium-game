@@ -11,7 +11,7 @@ inputs:
   blazium-version:
     description: >-
       Blazium Engine version: e.g., 0.1.184-nightly, 0.1.188-nightly, etc. Must include major, minor, and patch.
-    required: true
+    default: latest
   game-name:
     description: >-
       Game name: e.g., ProjectHangman
@@ -210,7 +210,11 @@ runs:
         mkdir -p android/build
         chmod 600 "$BLAZIUM_TEMPLATE/android_source.zip"
         # Replace - with .
-        version_dot=$(echo "${{ inputs.blazium-version }}" | sed 's/-/./')
+        if [[ "${{ env.BLAZIUM_INSTALLED_VERSION }}" != *-* ]]; then
+            version_dot="${{ env.BLAZIUM_INSTALLED_VERSION }}.release"
+        else
+            version_dot=$(echo "${{ env.BLAZIUM_INSTALLED_VERSION }}" | sed 's/-/./')
+        fi
         echo "$version_dot"
         echo "$version_dot" >> android/.build_version
         unzip $BLAZIUM_TEMPLATE/android_source.zip  -d android/build

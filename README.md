@@ -51,7 +51,7 @@ jobs:
       - name: Build Game
         uses: blazium-engine/export-blazium-game@master
         with:
-          blazium-version: 0.3.88-nightly
+          blazium-version: latest
           game-name: ${{ env.GAME_NAME }}
           platform-name: ${{ matrix.platform }}
           secret-macos-build-certificate-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
