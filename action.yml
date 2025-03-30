@@ -268,14 +268,14 @@ runs:
       if: env.platform-type != 'web' && env.platform-type == 'ios'
       run: |
         mkdir -p project/
-        Blazium --headless --export-release "${{ inputs.platform-name }}" project/${{ inputs.game-name }}${{ env.platform-extension }}
+        Blazium --headless --export-release --verbose "${{ inputs.platform-name }}" project/${{ inputs.game-name }}${{ env.platform-extension }}
     
     - name: 🚀 Build Web Game
       shell: bash
       if: env.platform-type == 'web'
       run: |
         mkdir -p build/
-        Blazium --headless --export-release "${{ inputs.platform-name }}" build/index${{ env.platform-extension }}
+        Blazium --headless --export-release --verbose "${{ inputs.platform-name }}" build/index${{ env.platform-extension }}
     
     - uses: maxim-lobanov/setup-xcode@v1
       if: env.platform-type == 'ios'
