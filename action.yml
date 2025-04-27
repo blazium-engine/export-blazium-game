@@ -336,6 +336,8 @@ runs:
 
         # Set permissions and sign the application
         chmod +x ${{ inputs.game-name }}.app
+        # Set permission and sign the binary
+        chmod +x ${{ inputs.game-name }}.app/Contents/MacOS/*
 
         codesign --deep --force --options=runtime --verbose --timestamp \
           --entitlements ../deploy/mac/entitlements.plist --sign "${{ env.APPLE_SIGNING_IDENTITY }}" \
