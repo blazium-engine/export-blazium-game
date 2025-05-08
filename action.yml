@@ -366,12 +366,3 @@ runs:
         ls -la build
         # find .aab files
         find . -name "*.aab"
-
-    - name: 📦 Upload ${{ inputs.platform-name }} Build
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: ${{ inputs.platform-name }}
-        path: build/**
-        if-no-files-found: error
-
