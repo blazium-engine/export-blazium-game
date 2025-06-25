@@ -105,7 +105,7 @@ runs:
     # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
     - name: Install the Apple certificate and provisioning profile for macOS
       shell: bash
-      if: env.platform-type == 'macos'
+      if: env.platform-type == 'macos' && inputs.secret-macos-build-certificate-base64 != ''
       env:
         # Developer ID Certificate
         BUILD_CERTIFICATE_BASE64: ${{ inputs.secret-macos-build-certificate-base64 }}
@@ -134,7 +134,7 @@ runs:
     # https://docs.github.com/en/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
     - name: Install the Apple certificate and provisioning profile for iOS
       shell: bash
-      if: env.platform-type == 'ios'
+      if: env.platform-type == 'ios' && inputs.secret-ios-distribution-certificate-base64 != ''
       env:
         DISTRIBUTION_CERTIFICATE_BASE64: ${{ inputs.secret-ios-distribution-certificate-base64 }}
         P12_PASSWORD: ${{ inputs.secret-p12-password }}
@@ -328,7 +328,7 @@ runs:
 
     - name: Sign for macos
       shell: bash
-      if: env.platform-type == 'macos'
+      if: env.platform-type == 'macos' && inputs.secret-macos-build-certificate-base64 != ''
       working-directory: build
       run: |
         # Remove wrong attributes
@@ -352,12 +352,6 @@ runs:
 
         xcrun stapler staple ${{ inputs.game-name }}.app
         rm ${{ inputs.game-name }}.zip
-
-    - name: TEMPORARY Move Android .aab to build
-      if: env.platform-type == 'android'
-      shell: bash
-      run: |
-        cp ./android/build/build/outputs/bundle/standardRelease/build-standard-release.aab ./build/${{ env.GAME_NAME }}.aab
 
     - name: List Files
       shell: bash
