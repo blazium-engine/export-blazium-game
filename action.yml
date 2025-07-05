@@ -329,7 +329,7 @@ runs:
 
     - name: 🚀 Build Project iOS
       shell: bash
-      if: env.platform-type != 'web' && env.platform-type == 'ios'
+      if: env.platform-type == 'ios' && inputs.secret-apple-team-id != '' && inputs.secret-apple-id
       run: |
         mkdir -p project/
         Blazium --headless --export-release --verbose "${{ inputs.platform-name }}" project/${{ inputs.game-name }}${{ env.platform-extension }}
