@@ -99,7 +99,6 @@ runs:
         # Override export_presets.cfg
         mv build-game/export_presets.cfg export_presets.cfg
 
-
     - name: Increment Version
       shell: bash
       id: set_version
@@ -310,11 +309,24 @@ runs:
 
     - name: 🚀 Build Game
       shell: bash
-      if: env.platform-type != 'web' && env.platform-type != 'ios'
+      if: env.platform-type != 'web' && env.platform-type != 'ios' && env.platform-type != 'android'
       run: |
         mkdir -p build/
-        GODOT_ANDROID_KEYSTORE_RELEASE_PATH="${{ github.workspace }}/release.keystore" && Blazium --headless --verbose --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
+        Blazium --headless --verbose --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
+    - name: 🚀 Build Android Game
+      shell: bash
+      if: env.platform-type == 'android'
+      run: |
+        mkdir -p build/
+        # Check if inputs.secret-android-keystore-base64 is empty, do a debug build
+        BUILD_TYPE_FLAG="--export-release"
+        if [ "${{ inputs.secret-android-keystore-base64 }}" == '' ]; then
+          echo "No keystore provided, doing a debug build"
+          BUILD_TYPE_FLAG="--export-debug"
+        fi
+        GODOT_ANDROID_KEYSTORE_RELEASE_PATH="${{ github.workspace }}/release.keystore" && Blazium --headless --verbose $BUILD_TYPE_FLAG "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
+
     - name: 🚀 Build Project iOS
       shell: bash
       if: env.platform-type != 'web' && env.platform-type == 'ios'
