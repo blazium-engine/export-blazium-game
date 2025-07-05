@@ -496,8 +496,8 @@ runs:
           echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
         fi
         if [[ "${{ matrix.platform.name }}" == "macOS" ]]; then
-          cp ./steamworks/redistributable_bin/osx/libsteam_api.dylib ./build/${{ inputs.game_name }}.app/Contents/MacOS/
-          chmod +x ./build/${{ inputs.game_name }}.app/Contents/MacOS/*
-          echo ${{ inputs.steam-app-id }} > ./build/${{ inputs.game_name }}.app/Contents/MacOS/steam_appid.txt
+          cp ./steamworks/redistributable_bin/osx/libsteam_api.dylib ./build/${{ inputs.game-name }}.app/Contents/MacOS/
+          chmod +x ./build/${{ inputs.game-name }}.app/Contents/MacOS/*
+          echo ${{ inputs.steam-app-id }} > ./build/${{ inputs.game-name }}.app/Contents/MacOS/steam_appid.txt
         fi
 
