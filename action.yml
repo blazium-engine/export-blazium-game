@@ -352,7 +352,6 @@ runs:
       if: env.platform-type == 'ios'
       run: |
         xcodebuild -showsdks
-        ls "$HOME/Library/MobileDevice/Provisioning Profiles"
         xcodebuild -resolvePackageDependencies
 
         # Build
@@ -360,7 +359,6 @@ runs:
         echo "Using following:"
         echo Certificate identity: $DEPLOY_SIGNING_IDENTITY
         echo PP UUID $PP_UUID
-        ls "$HOME/Library/MobileDevice/Provisioning Profiles/"
         security find-identity -v -p codesigning
         cp ../deploy/ios/exportOptions.plist .
         # Replace PP_UUID
