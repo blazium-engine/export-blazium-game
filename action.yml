@@ -311,6 +311,7 @@ runs:
       shell: bash
       if: env.platform-type != 'web' && env.platform-type != 'ios' && env.platform-type != 'android'
       run: |
+        echo "Building game for platform type: ${{ env.platform-type }}"
         mkdir -p build/
         Blazium --headless --verbose --export-release "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
     
@@ -318,6 +319,7 @@ runs:
       shell: bash
       if: env.platform-type == 'android'
       run: |
+        echo "Building game for platform Android"
         mkdir -p build/
         # Check if inputs.secret-android-keystore-base64 is empty, do a debug build
         BUILD_TYPE_FLAG="--export-release"
@@ -331,6 +333,7 @@ runs:
       shell: bash
       if: env.platform-type == 'ios' && inputs.secret-apple-team-id != '' && inputs.secret-apple-id
       run: |
+        echo "Building game for platform iOS"
         mkdir -p project/
         Blazium --headless --export-release --verbose "${{ inputs.platform-name }}" project/${{ inputs.game-name }}${{ env.platform-extension }}
     
