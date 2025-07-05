@@ -14,6 +14,10 @@ Sample usage:
 Complete usage (for example usage visit [blazium-engine/project-tictactoe](https://github.com/blazium-engine/project-tictactoe)):
 
 ```yml
+env:
+  GAME_NAME: GameName
+  ANDROID_PACKAGE: com.blazium.game
+  IOS_PACKAGE: com.blazium.game
 jobs:
   build:
     runs-on: ${{ matrix.platform.os }}
@@ -43,6 +47,8 @@ jobs:
         with:
           blazium-version: latest
           game-name: ${{ env.GAME_NAME }}
+          android-package: ${{ env.ANDROID_PACKAGE }}
+          ios-package: ${{ env.IOS_PACKAGE }}
           platform-name: ${{ matrix.platform }}
           secret-macos-build-certificate-base64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           secret-p12-password: ${{ secrets.P12_PASSWORD }}
@@ -77,8 +83,8 @@ If you want to build for steam, you need to send `steam-app-id` and `store-name`
 |-------------------------------------------|------------------------------------------------------------------|----------|--------|
 | blazium-version                           | Blazium Engine version to use (e.g. `latest`, `4.2.1`)           | No       | No     |
 | game-name                                 | Name of the game to export                                       | Yes      | No     |
-| android-package                           | Android package name (e.g. app.blazium.game_android)             | Yes      | No     |
-| ios-package                               | iOS package name (e.g. app.blazium.game_ios)                     | Yes      | No     |
+| android-package                           | Android package name (e.g. app.blazium.game_android)             | No      | No     |
+| ios-package                               | iOS package name (e.g. app.blazium.game_ios)                     | No      | No     |
 | platform-name                             | Platform export preset name (must match export preset)            | Yes      | No     |
 | secret-macos-build-certificate-base64      | macOS build certificate (base64)                                 | No       | Yes    |
 | secret-p12-password                       | Password for P12 certificate                                     | No       | Yes    |

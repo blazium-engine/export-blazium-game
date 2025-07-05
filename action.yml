@@ -19,11 +19,11 @@ inputs:
   android-package:
     description: >-
       Android package name: e.g., app.blazium.game_android
-    required: true
+    default: app.blazium.game_android
   ios-package:
     description: >-
       iOS package name: e.g., app.blazium.game_ios
-    required: true
+    default: app.blazium.game_ios
   platform-name:
     description: >-
       Platform to build for name. eg. Windows Desktop x86_64, Linux x86_64, etc. Must match version in editor.
@@ -427,13 +427,13 @@ runs:
         find . -name "*.aab"
 
     - uses: actions/checkout@v4
-      if: ${ inputs.steam-app-id } != ''
+      if: inputs.steam-app-id != '' && inputs.store-name == 'steam'
       with:
         repository: blazium-engine/steamworks
         path: steamworks
 
     - name: Copy steam dlls
-      if: ${ inputs.steam-app-id } != ''
+      if: inputs.steam-app-id != '' && inputs.store-name == 'steam'
       shell: bash
       run: |
         if [[ "${{ matrix.platform.name }}" == "Windows Desktop x86_64" ]]; then
