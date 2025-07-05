@@ -236,8 +236,9 @@ runs:
       if: env.platform-type == 'android'
       uses: android-actions/setup-android@v2
 
+    # For release builds
     - name: Set Android SDK path in Editor settings
-      if: env.platform-type == 'android'
+      if: env.platform-type == 'android' && inputs.secret-android-keystore-base64 != ''
       shell: bash
       env:
         SETTINGS: |
@@ -252,6 +253,20 @@ runs:
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=\"${{ github.workspace }}/release.keystore\"" >> $GITHUB_ENV
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=\"${{ inputs.secret-android-keystore-user }}\"" >> $GITHUB_ENV
         echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=\"${{ inputs.secret-android-keystore-password }}\"" >> $GITHUB_ENV
+        printf "%s\n" "$SETTINGS" > ~/.config/godot/editor_settings-4.tres
+    # For debug builds
+
+    - name: Set Android SDK path in Editor settings
+      if: env.platform-type == 'android' && inputs.secret-android-keystore-base64 == ''
+      shell: bash
+      env:
+        SETTINGS: |
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "/usr/local/lib/android/sdk"
+      run: |
+        mkdir -p ~/.config/godot/
         printf "%s\n" "$SETTINGS" > ~/.config/godot/editor_settings-4.tres
 
     - name: Install Android build template
