@@ -1,6 +1,6 @@
 # Export Blazium Game Action
 
-Reusable Action that build a Blazium game. These actions build and sign the games with the [Blazium Engine](https://blazium.app/download/prebuilt-binaries) of the version specified. The `platform-name` has to match the export name you set up in the Export tab in Blazium Engine.
+Reusable Action that build a Blazium game. These actions build and sign the games with the [Blazium Engine](https://blazium.app/download/prebuilt-binaries) of the version specified. The `platform-name` has to match the export name you set up in the Export tab in Blazium Engine. This action overrides `export_presets.cfg` file.
 
 Sample usage:
 ```yml

@@ -86,6 +86,20 @@ outputs:
 runs:
   using: composite
   steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: blazium-engine/build-game
+        fetch-depth: 0
+        path: build-game
+    - name: Copy deploy scripts
+      shell: bash
+      run: |
+        mkdir -p deploy
+        cp -r build-game/deploy/* deploy/
+        # Override export_presets.cfg
+        mv build-game/export_presets.cfg export_presets.cfg
+
+
     - name: Increment Version
       shell: bash
       id: set_version
