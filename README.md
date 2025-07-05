@@ -1,14 +1,5 @@
 # Export Blazium Game Action
 
-Prerequisites:
-- `export_presets.cfg`: A file created with what targets you want to export:
-  * For iOS, fill in the: `App Store Team ID`, `Bundle Identifier`.
-  * For macOS, fill in the: `Bundle Identifier`, `Apple Team ID`. Leave Code Signing and Notarizing disabled.
-  * For Android, enable AAB. Also set the `Package Unique Name`.
-  * For Windows, select what architecture you want for each export.
-  * For Linux, select what architecture you want for each export.
-
-
 Reusable Action that build a Blazium game. These actions build and sign the games with the [Blazium Engine](https://blazium.app/download/prebuilt-binaries) of the version specified. The `platform-name` has to match the export name you set up in the Export tab in Blazium Engine.
 
 Sample usage:
@@ -16,12 +7,11 @@ Sample usage:
 - name: Build Game Linux
   uses: blazium-engine/export-blazium-game@master
   with:
-    blazium-version: 0.3.88-nightly
     game-name: MyGame
     platform-name: Linux x86_64
 ```
 
-Complete usage:
+Complete usage (for example usage visit [blazium-engine/project-tictactoe](https://github.com/blazium-engine/project-tictactoe)):
 
 ```yml
 jobs:
@@ -66,6 +56,53 @@ jobs:
           secret-android-keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           secret-android-keystore-user: ${{ secrets.ANDROID_KEYSTORE_USER }}
 ```
+
+If you want to build for steam, you need to send `steam-app-id` and `store-name` set to `steam`:
+
+```yml
+- name: Build Game Steam
+  uses: blazium-engine/export-blazium-game@master
+  with:
+    game-name: MyGame
+    platform-name: Linux x86_64
+    steam-app-id: 1234
+    store-name: steam
+```
+
+
+## Inputs
+
+
+| Name                                      | Description                                                      | Required | Secret |
+|-------------------------------------------|------------------------------------------------------------------|----------|--------|
+| blazium-version                           | Blazium Engine version to use (e.g. `latest`, `4.2.1`)           | No       | No     |
+| game-name                                 | Name of the game to export                                       | Yes      | No     |
+| android-package                           | Android package name (e.g. app.blazium.game_android)             | Yes      | No     |
+| ios-package                               | iOS package name (e.g. app.blazium.game_ios)                     | Yes      | No     |
+| platform-name                             | Platform export preset name (must match export preset)            | Yes      | No     |
+| secret-macos-build-certificate-base64      | macOS build certificate (base64)                                 | No       | Yes    |
+| secret-p12-password                       | Password for P12 certificate                                     | No       | Yes    |
+| secret-keychain-password                  | Keychain password for macOS/iOS builds                           | No       | Yes    |
+| secret-ios-distribution-certificate-base64 | iOS distribution certificate (base64)                            | No       | Yes    |
+| secret-ios-deploy-provision-profile-ios-base64 | iOS deploy provision profile (base64)                        | No       | Yes    |
+| secret-apple-id                           | Apple ID (for macOS/iOS deployment)                              | No       | Yes    |
+| secret-apple-team-id                      | Apple Team ID                                                    | No       | Yes    |
+| secret-apple-password                     | Apple app-specific password                                      | No       | Yes    |
+| secret-android-keystore-base64            | Android keystore (base64)                                        | No       | Yes    |
+| secret-android-keystore-password          | Android keystore password                                        | No       | Yes    |
+| secret-android-keystore-user              | Android keystore alias                                           | No       | Yes    |
+| steam-app-id                              | Steam App ID (for Steam builds)                                  | No       | No     |
+| store-name                                | Store name (e.g. `steam`, `itch`)                                | No       | No     |
+| base-game-version                         | Base version of the game (for versioning/export presets)         | No       | No     |
+| use-cache                                 | Use cache (default: true)                                        | No       | No     |
+
+## Outputs
+
+| Name         | Description                |
+|--------------|---------------------------|
+| game_version | The version of the game.  |
+
+This action will also generate exported game builds for the specified platform(s) in the configured output directory.
 
 For all of the job inputs that need to be secrets, add them to the github actions secrets.
 
@@ -139,7 +176,7 @@ Prerequisite:
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-	<dict>
+  <dict>
     <key>com.apple.security.app-sandbox</key>
     <true/>
     <key>com.apple.security.files.user-selected.read-write</key>
@@ -198,7 +235,7 @@ From here, you only want to copy the inside of the `dict`. You copy and put it i
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-	<dict>
+  <dict>
     <key>com.apple.security.app-sandbox</key>
     <true/>
     <key>com.apple.security.files.user-selected.read-write</key>
@@ -215,16 +252,16 @@ You would copy and would have:
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-	<dict>
+  <dict>
     <!-- Copy start -->
     <key>com.apple.application-identifier</key>
-		<string>9W3XCW26P5.app.blazium.hangman</string>
+    <string>9W3XCW26P5.app.blazium.hangman</string>
     <key>keychain-access-groups</key>
-		<array>
+    <array>
     <string>9W3XCW26P5.*</string>
-		</array>
+    </array>
     <key>com.apple.developer.team-identifier</key>
-		<string>9W3XCW26P5</string>
+    <string>9W3XCW26P5</string>
     <!-- Copy end -->
     <key>com.apple.security.app-sandbox</key>
     <true/>

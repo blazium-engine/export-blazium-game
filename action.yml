@@ -16,6 +16,14 @@ inputs:
     description: >-
       Game name: e.g., ProjectHangman
     required: true
+  android-package:
+    description: >-
+      Android package name: e.g., app.blazium.game_android
+    required: true
+  ios-package:
+    description: >-
+      iOS package name: e.g., app.blazium.game_ios
+    required: true
   platform-name:
     description: >-
       Platform to build for name. eg. Windows Desktop x86_64, Linux x86_64, etc. Must match version in editor.
@@ -53,14 +61,44 @@ inputs:
   secret-android-keystore-user:
     description: >-
       Android keystore alias.
+  steam-app-id: 
+    description: >-
+      Steam App ID. If you are not building for Steam, leave it empty. Used only if store-name is set to 'steam'.
+    default: ''
+  store-name:
+    description: >-
+      Optional: Store name for the game. Used for versioning and export presets. Also used to know if the game is for Steam.
+    default: ''
+  base-game-version:
+    description: >-
+      Base version of the game. Used for versioning and export presets.
+    default: '1.0'
   use-cache:
     description: >-
       Use cache.
     default: 'true'
 
+outputs:
+  game_version:
+    description: "The game message"
+    value: ${{ steps.set_version.outputs.game_version }}
+
 runs:
   using: composite
   steps:
+    - name: Increment Version
+      shell: bash
+      id: set_version
+      run: |
+        export STORE_NAME=${{ inputs.store-name }}
+        export BASE_GAME_VERSION=${{ inputs.base-game-version }}
+        export ANDROID_PACKAGE=${{ inputs.android-package }}
+        export IOS_PACKAGE=${{ inputs.ios-package }}
+        export APPLE_TEAM_ID=${{ inputs.secret-apple-team-id }}
+        python deploy/update_version.py
+        GAME_VERSION=$(cat version.txt)
+        echo "game_version=$GAME_VERSION" >> $GITHUB_OUTPUT
+
     - name: Set env vars
       shell: bash
       run: |
@@ -326,9 +364,9 @@ runs:
         mkdir -p ../build
         mv build/${{ inputs.game-name }}.ipa ../build/${{ inputs.game-name }}.ipa
 
-    - name: Sign for macos
+    - name: Sign for macos (non-steam)
       shell: bash
-      if: env.platform-type == 'macos' && inputs.secret-macos-build-certificate-base64 != ''
+      if: env.platform-type == 'macos' && inputs.secret-macos-build-certificate-base64 != '' && inputs.store-name != 'steam'
       working-directory: build
       run: |
         # Remove wrong attributes
@@ -353,6 +391,33 @@ runs:
         xcrun stapler staple ${{ inputs.game-name }}.app
         rm ${{ inputs.game-name }}.zip
 
+    - name: Sign for macos (steam)
+      if: env.platform-type == 'macos' && inputs.secret-macos-build-certificate-base64 != '' && inputs.store-name == 'steam'
+      shell: bash
+      working-directory: build
+      run: |
+        # Remove wrong attributes
+        xattr -cr ${{ inputs.game-name }}.app
+
+        # Set permissions and sign the application
+        chmod +x ${{ inputs.game-name }}.app
+        # Set permission and sign the binary
+        chmod +x ${{ inputs.game-name }}.app/Contents/MacOS/*
+        
+        codesign --deep --force --options=runtime --verbose --timestamp \
+          --entitlements ../deploy/mac/entitlements-steam.plist --sign "${{ env.APPLE_SIGNING_IDENTITY }}" \
+          ${{ inputs.game-name }}.app
+        codesign --verify --strict --deep --verbose ${{ inputs.game-name }}.app
+        # Package the application into a zip file
+        ditto -c -k --keepParent ${{ inputs.game-name }}.app ${{ inputs.game-name }}.zip
+
+        /Applications/Xcode.app/Contents/Developer/usr/bin/notarytool store-credentials "AppleID" --apple-id "${{ inputs.secret-apple-id }}" --password "${{ inputs.secret-apple-password }}" --team-id "${{ inputs.secret-apple-team-id }}"
+
+        /Applications/Xcode.app/Contents/Developer/usr/bin/notarytool submit ${{ inputs.game-name }}.zip --wait --keychain-profile "AppleID"
+
+        xcrun stapler staple ${{ inputs.game-name }}.app
+        rm ${{ inputs.game-name }}.zip
+
     - name: List Files
       shell: bash
       run: |
@@ -360,3 +425,36 @@ runs:
         ls -la build
         # find .aab files
         find . -name "*.aab"
+
+    - uses: actions/checkout@v4
+      if: ${ inputs.steam-app-id } != ''
+      with:
+        repository: blazium-engine/steamworks
+        path: steamworks
+
+    - name: Copy steam dlls
+      if: ${ inputs.steam-app-id } != ''
+      shell: bash
+      run: |
+        if [[ "${{ matrix.platform.name }}" == "Windows Desktop x86_64" ]]; then
+          cp ./steamworks/redistributable_bin/win64/steam_api64.dll ./build/
+          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
+        fi
+        if [[ "${{ matrix.platform.name }}" == "Windows Desktop x86_32" ]]; then
+          cp ./steamworks/redistributable_bin/steam_api.dll ./build/
+          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
+        fi
+        if [[ "${{ matrix.platform.name }}" == "Linux x86_64" ]]; then
+          cp ./steamworks/redistributable_bin/linux64/libsteam_api.so ./build/
+          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
+        fi
+        if [[ "${{ matrix.platform.name }}" == "Linux x86_32" ]]; then
+          cp ./steamworks/redistributable_bin/linux32/libsteam_api.so ./build/
+          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
+        fi
+        if [[ "${{ matrix.platform.name }}" == "macOS" ]]; then
+          cp ./steamworks/redistributable_bin/osx/libsteam_api.dylib ./build/${{ inputs.game_name }}.app/Contents/MacOS/
+          chmod +x ./build/${{ inputs.game_name }}.app/Contents/MacOS/*
+          echo ${{ inputs.steam-app-id }} > ./build/${{ inputs.game_name }}.app/Contents/MacOS/steam_appid.txt
+        fi
+
