@@ -1,7 +1,7 @@
 name: Build Blazium Game
 
 description: >-
-  Build Blaizum Game for use with macOS, Windows, and Linux CI/CD runners.
+  Build Blazium Game for use with macOS, Windows, and Linux CI/CD runners.
 
 author: 'Blazium'
 branding:
