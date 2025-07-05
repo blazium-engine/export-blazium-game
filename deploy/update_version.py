@@ -64,7 +64,7 @@ print(f"Updated store_name to: {store_name}")
 with open("version.txt", "w") as file:
     file.write(version)
 
-for file_name in ["deploy/ios/exportOptions.plist", "deploy/mac/entitlements-deploy.plist"]:
+for file_name in ["deploy/ios/exportOptions.plist"]:
     # Update ios and mac provisioning profiles
     with open(file_name, "r") as file:
         content = file.read()

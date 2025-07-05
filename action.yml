@@ -88,16 +88,21 @@ runs:
   steps:
     - uses: actions/checkout@v4
       with:
-        repository: blazium-engine/build-game
+        repository: blazium-engine/export-blazium-game
         fetch-depth: 0
-        path: build-game
+        path: export-blazium-game
     - name: Copy deploy scripts
       shell: bash
       run: |
         mkdir -p deploy
-        cp -r build-game/deploy/* deploy/
+        mkdir -p deploy/ios
+        mkdir -p deploy/mac
+        mv export-blazium-game/deploy/ios/exportOptions.plist deploy/ios/exportOptions.plist
+        mv export-blazium-game/deploy/mac/entitlements-steam.plist deploy/mac/entitlements-steam.plist
+        mv export-blazium-game/deploy/mac/entitlements.plist deploy/mac/entitlements.plist
+        mv export-blazium-game/deploy/update_version.py deploy/update_version.py
         # Override export_presets.cfg
-        mv build-game/export_presets.cfg export_presets.cfg
+        mv export-blazium-game/export_presets.cfg export_presets.cfg
 
     - name: Increment Version
       shell: bash
