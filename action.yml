@@ -412,6 +412,38 @@ runs:
         mkdir -p ../build
         mv build/${{ inputs.game-name }}.ipa ../build/${{ inputs.game-name }}.ipa
 
+    - uses: actions/checkout@v4
+      if: inputs.steam-app-id != '' && inputs.store-name == 'steam'
+      with:
+        repository: blazium-engine/steamworks
+        path: steamworks
+
+    - name: Copy steam dlls
+      if: inputs.steam-app-id != '' && inputs.store-name == 'steam'
+      shell: bash
+      run: |
+        if [[ "${{ matrix.platform.name }}" == "Windows Desktop x86_64" ]]; then
+          cp ./steamworks/redistributable_bin/win64/steam_api64.dll ./build/
+          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
+        fi
+        if [[ "${{ matrix.platform.name }}" == "Windows Desktop x86_32" ]]; then
+          cp ./steamworks/redistributable_bin/steam_api.dll ./build/
+          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
+        fi
+        if [[ "${{ matrix.platform.name }}" == "Linux x86_64" ]]; then
+          cp ./steamworks/redistributable_bin/linux64/libsteam_api.so ./build/
+          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
+        fi
+        if [[ "${{ matrix.platform.name }}" == "Linux x86_32" ]]; then
+          cp ./steamworks/redistributable_bin/linux32/libsteam_api.so ./build/
+          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
+        fi
+        if [[ "${{ matrix.platform.name }}" == "macOS" ]]; then
+          cp ./steamworks/redistributable_bin/osx/libsteam_api.dylib ./build/${{ inputs.game-name }}.app/Contents/MacOS/
+          chmod +x ./build/${{ inputs.game-name }}.app/Contents/MacOS/*
+          echo ${{ inputs.steam-app-id }} > ./build/${{ inputs.game-name }}.app/Contents/MacOS/steam_appid.txt
+        fi
+
     - name: Sign for macos (non-steam)
       shell: bash
       if: env.platform-type == 'macos' && inputs.secret-macos-build-certificate-base64 != '' && inputs.store-name != 'steam'
@@ -473,36 +505,3 @@ runs:
         ls -la build
         # find .aab files
         find . -name "*.aab"
-
-    - uses: actions/checkout@v4
-      if: inputs.steam-app-id != '' && inputs.store-name == 'steam'
-      with:
-        repository: blazium-engine/steamworks
-        path: steamworks
-
-    - name: Copy steam dlls
-      if: inputs.steam-app-id != '' && inputs.store-name == 'steam'
-      shell: bash
-      run: |
-        if [[ "${{ matrix.platform.name }}" == "Windows Desktop x86_64" ]]; then
-          cp ./steamworks/redistributable_bin/win64/steam_api64.dll ./build/
-          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
-        fi
-        if [[ "${{ matrix.platform.name }}" == "Windows Desktop x86_32" ]]; then
-          cp ./steamworks/redistributable_bin/steam_api.dll ./build/
-          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
-        fi
-        if [[ "${{ matrix.platform.name }}" == "Linux x86_64" ]]; then
-          cp ./steamworks/redistributable_bin/linux64/libsteam_api.so ./build/
-          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
-        fi
-        if [[ "${{ matrix.platform.name }}" == "Linux x86_32" ]]; then
-          cp ./steamworks/redistributable_bin/linux32/libsteam_api.so ./build/
-          echo ${{ inputs.steam-app-id }} > ./build/steam_appid.txt
-        fi
-        if [[ "${{ matrix.platform.name }}" == "macOS" ]]; then
-          cp ./steamworks/redistributable_bin/osx/libsteam_api.dylib ./build/${{ inputs.game-name }}.app/Contents/MacOS/
-          chmod +x ./build/${{ inputs.game-name }}.app/Contents/MacOS/*
-          echo ${{ inputs.steam-app-id }} > ./build/${{ inputs.game-name }}.app/Contents/MacOS/steam_appid.txt
-        fi
-
