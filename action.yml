@@ -327,11 +327,12 @@ runs:
           echo "No keystore provided, doing a debug build"
           BUILD_TYPE_FLAG="--export-debug"
         fi
+        echo "Using BUILD_TYPE_FLAG: $BUILD_TYPE_FLAG"
         GODOT_ANDROID_KEYSTORE_RELEASE_PATH="${{ github.workspace }}/release.keystore" && Blazium --headless --verbose $BUILD_TYPE_FLAG "${{ inputs.platform-name }}" build/${{ inputs.game-name }}${{ env.platform-extension }}
 
     - name: 🚀 Build Project iOS
       shell: bash
-      if: env.platform-type == 'ios' && inputs.secret-apple-team-id != '' && inputs.secret-apple-id
+      if: env.platform-type == 'ios' && inputs.secret-apple-id
       run: |
         echo "Building game for platform iOS"
         mkdir -p project/
