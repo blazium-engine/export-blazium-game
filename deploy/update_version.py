@@ -80,7 +80,7 @@ for file_name in ["deploy/ios/exportOptions.plist", "deploy/mac/entitlements-dep
         file.write(content)
 
 # Update export_presets.cfg 
-with open("export_presets.cfg ", "r") as file:
+with open("export_presets.cfg", "r") as file:
     content = file.read()
 
 # Replace app.blazium.game_android with ANDROID_PACKAGE env
