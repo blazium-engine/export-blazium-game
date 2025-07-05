@@ -11,7 +11,7 @@ Sample usage:
     platform-name: Linux x86_64
 ```
 
-Complete usage (for example usage visit [blazium-engine/project-tictactoe](https://github.com/blazium-engine/project-tictactoe)):
+Complete usage (for example usage visit [blazium-engine/project-tictactoe](https://github.com/blazium-engine/project-tictactoe) or [blazium-engine/blazium-project-autobuild](https://github.com/blazium-engine/blazium-project-autobuild)):
 
 ```yml
 env:
